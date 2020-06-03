@@ -88,10 +88,26 @@ rule pass:
             '--readFilesIn ~/Transcriptomics_exercise/{input.R1L1} ~/Transcriptomics_exercise/{input.R2L1} '
             '--readFilesCommand zcat '
             '--outSAMtype BAM SortedByCoordinate '
-rule sort_by_name:
+rule indexing_bam:
         input:
-            'output/STAR/{sample}_pass/Aligned.sortedByCoord.out.bam'
+            'output/STAR/{sample}_pass/Aligned.sortedByCoord.out.bam',
         output:
-            'output/sorted_by_name_bam/{sample}_sorted_by_name.bam'
+            'output/STAR/{sample}_pass/Aligned.sortedByCoord.out.bam.bai'
         shell:
-            'samtools sort -n {input} -o {output}'
+            'samtools index {input}'
+rule featureCounts1:
+        input:
+            mapp_res='output/STAR/{sample}_pass/Aligned.sortedByCoord.out.bam',
+            ref_gtf='ref_files/chr19_20Mb.gtf'
+        output:
+            'output/FeatureCounts/{sample}_feature_counts_s1.txt',
+        shell:
+            'featureCounts -p -t exon -g gene_id -a {input.ref_gtf} -o {output} {input.mapp_res} -s 1'
+rule featureCounts2:
+        input:
+            mapp_res='output/STAR/{sample}_pass/Aligned.sortedByCoord.out.bam',
+            ref_gtf='ref_files/chr19_20Mb.gtf'
+        output:
+            'output/FeatureCounts/{sample}_feature_counts_s2.txt',
+        shell:
+            'featureCounts -p -t exon -g gene_id -a {input.ref_gtf} -o {output} {input.mapp_res} -s 2'
