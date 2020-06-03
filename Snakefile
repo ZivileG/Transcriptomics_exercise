@@ -111,3 +111,13 @@ rule featureCounts2:
             'output/FeatureCounts/{sample}_feature_counts_s2.txt',
         shell:
             'featureCounts -p -t exon -g gene_id -a {input.ref_gtf} -o {output} {input.mapp_res} -s 2'
+rule feature_count_combined:
+        input:
+        #    mapp_res='output/STAR/{sample}_pass/Aligned.sortedByCoord.out.bam',
+            ref_gtf='ref_files/chr19_20Mb.gtf'
+        output:
+            'output/Collibri_counts.txt',
+            'output/KAPA_counts.txt'
+        shell:
+            'featureCounts -p -t exon -g gene_id -a ref_files/chr19_20Mb.gtf -o output/Collibri_counts.txt -M output/STAR/Collibri*/*.bam -s 1 &&'
+            'featureCounts -p -t exon -g gene_id -a ref_files/chr19_20Mb.gtf -o output/KAPA_counts.txt -M output/STAR/KAPA*/*.bam -s 2'
