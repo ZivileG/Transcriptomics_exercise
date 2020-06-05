@@ -12,7 +12,7 @@ library(stringr)
 library(ggplot2)
 library(stringr)
 setwd("C:/Users/zivil_000/Desktop/transcr")
-counts=read.csv("KAPA_counts.txt", sep="", head=T, skip=1, row.names = "Geneid")
+counts=read.csv("Collibri_counts.txt", sep="", head=T, skip=1, row.names = "Geneid")
 ##Create an object for storing names of samples and condition of the sample
 colnames(counts)[6:9]
 colnames(counts)[6:9]=str_split_fixed(colnames(counts)[6:9],"\\.",4)[,4]
@@ -68,10 +68,10 @@ THRESHOLD <- 0.05
 A.cds.sig <- subset(res_ddds, pvalue<THRESHOLD) ## A.cds.result was generated from DESeq Collubri
 B.cds.sig <- subset(res_ddds, pvalue<THRESHOLD) ## B.cds.result was generated from DESeq KAPA
 A=row.names(A.cds.sig[1])
-B=row.names(A.cds.sig[1])
+B=row.names(B.cds.sig[1])
 #install.packages('VennDiagram')
 library(VennDiagram)
-pdf("venn_diagram.pdf")
+pdf("venn_diagram_KAPA_Collibri.pdf")
 venn.plot <- venn.diagram(list(A, B), NULL, fill=c("red", "green"), alpha=c(0.5,0.5), cex = 2, cat.fontface=4, category.names=c("Collibri", "KAPA"))
 grid.draw(venn.plot)
 dev.off()
@@ -82,3 +82,16 @@ sink("output.txt")
 print(list(A))
 sink()
 print(list(A))
+
+sink("output3.txt")
+print(list(B))
+sink()
+print(list(A))
+
+C=res_ddds[1]
+
+sink("output6.txt")
+print(list(C))
+sink()
+
+print(list(C))
