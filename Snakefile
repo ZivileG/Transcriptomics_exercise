@@ -2,7 +2,17 @@ SAMPLES, = glob_wildcards('input/{sample}_R1_001.fastq.gz')
 PATTERNS=["R1_001", "R2_001"]
 rule allout:
     input:
+         expand("output/fastqc_out/{sample}_{pattern}_fastqc.html",sample =SAMPLES, pattern=PATTERNS),
+         "output/multiqc_out/multiqc_report.html",
+         expand("output/fastqc_trim_out/{sample}_{pattern}_fastqc.html", sample =SAMPLES, pattern=PATTERNS),
+         "output/multiqc_trim_out/multiqc_report.html",
          expand('output/bbduk_out/{sample}_{pattern}_trimmed.fastq.gz', sample =SAMPLES, pattern=PATTERNS),
+         directory('STAR_Output'),
+         expand('output/STAR/{sample}_pass/Aligned.sortedByCoord.out.bam', sample =SAMPLES),
+         expand('output/FeatureCounts/{sample}_feature_counts_s1.txt', sample =SAMPLES),
+         expand('output/FeatureCounts/{sample}_feature_counts_s1.txt', sample =SAMPLES),
+         'output/Collibri_counts.txt',
+         'output/KAPA_counts.txt'
 rule fastqc:
     input:
         "input/{sample}_{pattern}.fastq.gz"
@@ -25,7 +35,7 @@ rule multiqc:
 
 rule bbduk:
     input:
-        expand("input/{sample}_{pattern}.fastq.gz", sample= SAMPLES, pattern = PATTERNS)
+        "input/{sample}_{pattern}.fastq.gz"
     output:
         "output/bbduk_out/{sample}_{pattern}_trimmed.fastq.gz"
     conda:
