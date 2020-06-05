@@ -2,12 +2,12 @@ SAMPLES, = glob_wildcards('input/{sample}_R1_001.fastq.gz')
 PATTERNS=["R1_001", "R2_001"]
 rule allout:
     input:
-         expand("output/fastqc_out/{sample}_{pattern}_fastqc.html",sample =SAMPLES, pattern=PATTERNS),
+        # expand("output/fastqc_out/{sample}_{pattern}_fastqc.html",sample =SAMPLES, pattern=PATTERNS),
          "output/multiqc_out/multiqc_report.html",
          expand("output/fastqc_trim_out/{sample}_{pattern}_fastqc.html", sample =SAMPLES, pattern=PATTERNS),
          "output/multiqc_trim_out/multiqc_report.html",
          expand('output/bbduk_out/{sample}_{pattern}_trimmed.fastq.gz', sample =SAMPLES, pattern=PATTERNS),
-         directory('STAR_Output'),
+        # directory('STAR_Output'),
          expand('output/STAR/{sample}_pass/Aligned.sortedByCoord.out.bam', sample =SAMPLES),
          expand('output/FeatureCounts/{sample}_feature_counts_s1.txt', sample =SAMPLES),
          expand('output/FeatureCounts/{sample}_feature_counts_s1.txt', sample =SAMPLES),
@@ -15,6 +15,7 @@ rule allout:
          'output/KAPA_counts.txt'
 rule fastqc:
     input:
+    #    expand('input/{sample}_{pattern}.fastq.gz', sample =SAMPLES, pattern=PATTERNS)
         "input/{sample}_{pattern}.fastq.gz"
     output:
         "output/fastqc_out/{sample}_{pattern}_fastqc.html"
@@ -35,7 +36,8 @@ rule multiqc:
 
 rule bbduk:
     input:
-        "input/{sample}_{pattern}.fastq.gz"
+        "input/{sample}.fastq.gz"
+        #"input/{sample}_{pattern}.fastq.gz"
     output:
         "output/bbduk_out/{sample}_{pattern}_trimmed.fastq.gz"
     conda:
@@ -66,7 +68,7 @@ rule index:
         fa = 'ref_files/chr19_20Mb.fa',
         gtf = 'ref_files/chr19_20Mb.gtf'
     output:
-        'STAR_Output'
+        directory('STAR_Output')
     threads: 4
     shell:
         'mkdir {output} && '
@@ -75,7 +77,7 @@ rule index:
         '--genomeDir {output} '
         '--genomeFastaFiles {input.fa} '
         '--sjdbGTFfile {input.gtf} '
-        '--sjdbOverhang 100'
+#        '--sjdbOverhang 100'
 rule pass:
         input:
              R1L1 = 'output/bbduk_out/{sample}_R1_001_trimmed.fastq.gz',
